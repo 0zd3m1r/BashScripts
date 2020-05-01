@@ -1,0 +1,6 @@
+service fail2ban restart
+grep 'Ban' /var/log/fail2ban.log | awk '{print $9;}' | sort | uniq -c | awk '{print $2;}' > /home/ban.list
+cat /var/log/auth.log |grep "Failed password for root from" | grep -v "message" | awk '{print $11;}'|sort|uniq -c | awk '{print $2;}' >> /home/ban.list
+for IP in $(cat /home/ban.list);do
+        sudo /usr/sbin/ufw insert 1 deny  from $IP
+done
